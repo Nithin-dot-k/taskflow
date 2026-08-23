@@ -1,0 +1,17 @@
+# Environment variables (Secrets)
+.env
+.env.local
+
+# Python dependencies & virtual environments
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Node/React dependencies (we will create this folder later)
+node_modules/
+dist/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
