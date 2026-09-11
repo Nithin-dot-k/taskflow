@@ -14,3 +14,8 @@ class UserResponse(UserBase):
 
     # This tells Pydantic to read SQLAlchemy model objects as if they were simple dictionaries
     model_config = {"from_attributes": True}
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
