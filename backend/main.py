@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from config import settings
 from database import Base, engine
 from users.router import router as auth_router  # Import our new router
+from projects.models import Project 
+
+Base.metadata.create_all(bind=engine)
 
 # Tell SQLAlchemy to create all tables in our database (if they don't exist yet)
 Base.metadata.create_all(bind=engine)
