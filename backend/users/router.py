@@ -6,9 +6,16 @@ from users.models import User
 from users.schemas import UserCreate, UserResponse, Token 
 from users.schemas import UserCreate, UserResponse
 from users.utils import hash_password, verify_password, create_access_token
+from fastapi.security import OAuth2PasswordBearer
+import jwt
+from config import settings
 
 # 1. Initialize the router with a prefix and tags for organization
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+# This tells FastAPI where to look for the token
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
 
 @router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def signup(user_in: UserCreate, db: Session = Depends(get_db)):
@@ -48,3 +55,20 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     
     # 3. Return the token
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    try:
+        # Decode the token
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        user_id = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    # Get user from DB
+    user = db.query(User).filter(User.id == int(user_id)).first()
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not found")
+    return user
