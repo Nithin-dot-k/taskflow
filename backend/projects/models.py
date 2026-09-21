@@ -13,3 +13,5 @@ class Project(Base):
     
     # Use string "User" to avoid circular imports
     owner = relationship("User", back_populates="projects")
+
+    tasks = relationship("Task", back_populates="project")

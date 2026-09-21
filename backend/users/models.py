@@ -16,3 +16,5 @@ class User(Base):
 
     # Use string "Project" so SQLAlchemy knows to look it up later
     projects: Mapped[List["Project"]] = relationship("Project", back_populates="owner")
+
+    tasks = relationship("Task", back_populates="assignee")

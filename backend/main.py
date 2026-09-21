@@ -4,6 +4,8 @@ from database import Base, engine
 from users.router import router as auth_router  # Import our new router
 from projects.models import Project 
 from projects.router import router as projects_router
+from tasks.models import Task
+from tasks.router import router as tasks_router
 
 # Tell SQLAlchemy to create all tables in our database (if they don't exist yet)
 Base.metadata.create_all(bind=engine)
@@ -13,6 +15,7 @@ app = FastAPI(title=settings.PROJECT_NAME)
 # Register our authentication router with the app
 app.include_router(auth_router)
 app.include_router(projects_router)
+app.include_router(tasks_router)
 
 @app.get("/")
 def read_root():
