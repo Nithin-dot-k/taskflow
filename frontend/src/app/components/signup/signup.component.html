@@ -1,0 +1,13 @@
+<div class="signup-container">
+  <h2>Sign Up</h2>
+  
+  <!-- [(ngModel)] links the input box directly to your TypeScript 'email' variable -->
+  <input [(ngModel)]="email" type="email" placeholder="Email address" />
+  <br>
+  
+  <input [(ngModel)]="password" type="password" placeholder="Password" />
+  <br>
+  
+  <!-- (click) links the button to your 'onSignup()' function -->
+  <button (click)="onSignup()">Create Account</button>
+</div>
