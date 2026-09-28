@@ -3,6 +3,7 @@ from config import settings
 from database import Base, engine
 from users.router import router as auth_router  # Import our new router
 from projects.models import Project 
+from fastapi.middleware.cors import CORSMiddleware
 from projects.router import router as projects_router
 from tasks.models import Task
 from tasks.router import router as tasks_router
@@ -11,6 +12,14 @@ from tasks.router import router as tasks_router
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title=settings.PROJECT_NAME)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],
+    allow_credentials=True,
+    allow_methods=["*"], # Allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"], # Allow all headers
+)
 
 # Register our authentication router with the app
 app.include_router(auth_router)
