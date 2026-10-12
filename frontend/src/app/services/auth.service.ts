@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -16,4 +16,13 @@ export class AuthService {
     // This sends the JSON data to our FastAPI /auth/signup endpoint
     return this.http.post(`${this.apiUrl}/signup`, userData);
   }
+  login(email: string, password: string): Observable<any> {
+    const body = new HttpParams()
+        .set('username', email)
+        .set('password', password);
+
+    return this.http.post(`${this.apiUrl}/login`, body.toString(), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
+}
 }
