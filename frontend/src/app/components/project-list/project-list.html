@@ -1,0 +1,14 @@
+<h2>My Projects</h2>
+<p>Debugging: I have {{ projects().length }} projects.</p>
+@if (projects().length > 0) {
+  <ul>
+    @for (project of projects(); track project.id) {
+      <li>
+        <h3>{{ project.title }}</h3>
+        <p>{{ project.description }}</p>
+      </li>
+    }
+  </ul>
+} @else {
+  <p>No projects found. Create one!</p>
+}
