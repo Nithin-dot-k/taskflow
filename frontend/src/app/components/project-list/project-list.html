@@ -1,5 +1,4 @@
 <h2>My Projects</h2>
-<p>Debugging: I have {{ projects().length }} projects.</p>
 @if (projects().length > 0) {
   <ul>
     @for (project of projects(); track project.id) {

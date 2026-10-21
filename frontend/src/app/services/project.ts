@@ -23,4 +23,11 @@ export class ProjectService {
     // 3. Send headers along with the GET request
     return this.http.get(`${this.apiUrl}/`, { headers });
   }
+  
+  createProject(projectData: any): Observable<any> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    
+    return this.http.post(`${this.apiUrl}/`, projectData, { headers });
+  }
 }
