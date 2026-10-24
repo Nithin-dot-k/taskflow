@@ -1,10 +1,11 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { ProjectService } from '../../services/project';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-project-list',
-  imports: [],
+  imports: [CommonModule, RouterLink],
   standalone: true,
   templateUrl: './project-list.html',
   styleUrl: './project-list.css',

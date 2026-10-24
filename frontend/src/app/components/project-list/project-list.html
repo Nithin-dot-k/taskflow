@@ -3,7 +3,9 @@
   <ul>
     @for (project of projects(); track project.id) {
       <li>
-        <h3>{{ project.title }}</h3>
+        <a [routerLink]="['/projects', project.id]">
+          <h3>{{ project.title }}</h3>
+        </a>
         <p>{{ project.description }}</p>
       </li>
     }

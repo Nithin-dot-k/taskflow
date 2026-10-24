@@ -1,0 +1,31 @@
+<div class="project-detail-container">
+  <h2>Project Tasks (ID: {{ projectId }})</h2>
+
+  <!-- 1. Form to add a new task -->
+  <div class="add-task-form">
+    <h3>Add New Task</h3>
+    <input [(ngModel)]="newTaskTitle" placeholder="Task Title (required)" />
+    <input [(ngModel)]="newTaskDescription" placeholder="Task Description (optional)" />
+    <button (click)="onAddTask()">Add Task</button>
+  </div>
+
+  <hr />
+
+  <!-- 2. List of existing tasks -->
+  <h3>Tasks</h3>
+  @if (tasks().length > 0) {
+    <ul>
+      @for (task of tasks(); track task.id) {
+        <li>
+          <h4>{{ task.title }}</h4>
+          <p>{{ task.description }}</p>
+          <small
+            >Status: <strong>{{ task.status }}</strong></small
+          >
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>No tasks yet for this project. Add one above!</p>
+  }
+</div>

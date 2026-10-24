@@ -1,0 +1,72 @@
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router'; 
+import { TaskService } from '../../services/task';
+
+@Component({
+  selector: 'app-project-detail',
+  imports: [CommonModule, FormsModule],
+  standalone: true,
+  templateUrl: './project-detail.html',
+  styleUrl: './project-detail.css',
+})
+export class ProjectDetail implements OnInit {
+   // Store the project ID extracted from the URL
+  projectId!: number;
+
+  // Signal holding the list of tasks for this project
+  tasks = signal<any[]>([]);
+
+  // Form input variables for creating a new task
+  newTaskTitle = '';
+  newTaskDescription = '';
+
+  constructor(
+    private route: ActivatedRoute,    // Inject the URL Scanner
+    private taskService: TaskService  // Inject the Task API Service
+  ) {}
+
+  ngOnInit() {
+    // 1. Read the ':id' parameter from the active route
+    const idParam = this.route.snapshot.paramMap.get('id');
+    this.projectId = Number(idParam);
+
+    // 2. Automatically load the tasks for this project
+    this.loadTasks();
+  }
+
+  loadTasks() {
+    this.taskService.getTasks(this.projectId).subscribe({
+      next: (data) => {
+        this.tasks.set(data);
+      },
+      error: (err) => console.error('Error fetching tasks:', err)
+    });
+  }
+
+  onAddTask() {
+    if (!this.newTaskTitle.trim()) {
+      alert('Please enter a task title');
+      return;
+    }
+
+    // Notice: we attach this.projectId automatically!
+    const payload = {
+      title: this.newTaskTitle,
+      description: this.newTaskDescription,
+      project_id: this.projectId
+    };
+
+    this.taskService.createTask(payload).subscribe({
+      next: (createdTask) => {
+        // Clear the form
+        this.newTaskTitle = '';
+        this.newTaskDescription = '';
+        // Refresh the tasks list on the screen
+        this.loadTasks();
+      },
+      error: (err) => console.error('Error creating task:', err)
+    });
+  }
+}
