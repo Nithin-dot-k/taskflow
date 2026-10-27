@@ -9,6 +9,9 @@ class TaskBase(BaseModel):
 class TaskCreate(TaskBase):
     project_id: int
 
+class TaskUpdateStatus(BaseModel):
+    status: TaskStatus
+
 class TaskResponse(TaskBase):
     id: int
     project_id: int

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from database import get_db
 from tasks.models import Task
-from tasks.schemas import TaskCreate, TaskResponse
+from tasks.schemas import TaskCreate, TaskResponse, TaskUpdateStatus
 from users.router import get_current_user
 from users.models import User
 
@@ -48,3 +48,28 @@ def delete_task(task_id: int, db: Session = Depends(get_db), current_user: User 
     db.delete(task)
     db.commit()
     return None
+
+
+@router.patch("/{task_id}", response_model=TaskResponse)
+def update_task_status(
+    task_id: int,
+    task_update: TaskUpdateStatus,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    from projects.models import Project
+
+    # Verify task exists AND belongs to a project owned by the current user
+    task = db.query(Task).join(Project).filter(
+        Task.id == task_id,
+        Project.owner_id == current_user.id
+    ).first()
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found or not authorized")
+
+    # Update the status and commit
+    task.status = task_update.status
+    db.commit()
+    db.refresh(task)
+    return task
