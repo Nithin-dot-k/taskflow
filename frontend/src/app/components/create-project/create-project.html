@@ -1,6 +1,12 @@
-<div class="form-container">
-  <h3>Create New Project</h3>
-  <input [(ngModel)]="title" placeholder="Project Title" />
-  <input [(ngModel)]="description" placeholder="Description" />
-  <button (click)="onCreate()">Create Project</button>
+<div class="create-project-container">
+  <h2>Create a New Project</h2>
+  <div>
+    <label>Title:</label>
+    <input [(ngModel)]="title" placeholder="Project title" />
+  </div>
+  <div>
+    <label>Description:</label>
+    <input [(ngModel)]="description" placeholder="Project description" />
+  </div>
+  <button (click)="onCreate()">Save Project</button>
 </div>

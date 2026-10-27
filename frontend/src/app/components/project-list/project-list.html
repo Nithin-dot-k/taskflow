@@ -1,15 +1,24 @@
-<h2>My Projects</h2>
-@if (projects().length > 0) {
-  <ul>
-    @for (project of projects(); track project.id) {
-      <li>
-        <a [routerLink]="['/projects', project.id]">
-          <h3>{{ project.title }}</h3>
-        </a>
-        <p>{{ project.description }}</p>
-      </li>
-    }
-  </ul>
-} @else {
-  <p>No projects found. Create one!</p>
-}
+<div class="projects-container">
+  <div class="header">
+    <h2>My Projects</h2>
+    <!-- A button that takes the user directly to the creation form -->
+    <button routerLink="/create-project">+ New Project</button>
+  </div>
+  
+  <p>Debugging: I have {{ projects().length }} projects.</p>
+
+  @if (projects().length > 0) {
+    <ul>
+      @for (project of projects(); track project.id) {
+        <li>
+          <a [routerLink]="['/projects', project.id]">
+            <h3>{{ project.title }}</h3>
+          </a>
+          <p>{{ project.description }}</p>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>No projects found. <a routerLink="/create-project">Create one here!</a></p>
+  }
+</div>
