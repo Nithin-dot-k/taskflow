@@ -13,10 +13,10 @@ def create_task(task_in: TaskCreate, db: Session = Depends(get_db), current_user
 
      # Check if project exists
     from projects.models import Project # Import here to avoid circular imports
-    project = db.query(Project).filter(Project.id == task_in.project_id).first()
+    project = db.query(Project).filter(Project.id == task_in.project_id,Project.owner_id == current_user.id).first()
     
     if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+        raise HTTPException(status_code=404, detail="Project not found or you are not authorized to add tasks to it")
 
     new_task = Task(**task_in.model_dump())
     db.add(new_task)

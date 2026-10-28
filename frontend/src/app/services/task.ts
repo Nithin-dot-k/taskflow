@@ -30,4 +30,13 @@ export class TaskService {
       headers: this.getHeaders()
     });
   }
+
+  // Update task status (todo -> in-progress -> done)
+  updateTaskStatus(taskId: number, newStatus: string): Observable<any> {
+    return this.http.patch(
+      `${this.apiUrl}/${taskId}`,
+      { status: newStatus },
+      { headers: this.getHeaders() }
+    );
+  }
 }

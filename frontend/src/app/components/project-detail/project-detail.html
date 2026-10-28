@@ -11,21 +11,51 @@
 
   <hr />
 
-  <!-- 2. List of existing tasks -->
-  <h3>Tasks</h3>
-  @if (tasks().length > 0) {
-    <ul>
-      @for (task of tasks(); track task.id) {
-        <li>
+  <!-- 2. The 3-Column Task Board -->
+  <div class="board-columns" style="display: flex; gap: 20px;">
+
+    <!-- Column 1: TO DO -->
+    <div class="column" style="flex: 1; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
+      <h3>To Do ({{ getTasksByStatus('todo').length }})</h3>
+      @for (task of getTasksByStatus('todo'); track task.id) {
+        <div class="task-card" style="background: #f9f9f9; margin-bottom: 10px; padding: 10px; border-radius: 4px;">
           <h4>{{ task.title }}</h4>
           <p>{{ task.description }}</p>
-          <small
-            >Status: <strong>{{ task.status }}</strong></small
-          >
-        </li>
+          <button (click)="onMoveStatus(task.id, 'in-progress')">Start ➔</button>
+        </div>
+      } @empty {
+        <p style="color: #888;">No tasks to do.</p>
       }
-    </ul>
-  } @else {
-    <p>No tasks yet for this project. Add one above!</p>
-  }
+    </div>
+
+    <!-- Column 2: IN PROGRESS -->
+    <div class="column" style="flex: 1; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
+      <h3>In Progress ({{ getTasksByStatus('in-progress').length }})</h3>
+      @for (task of getTasksByStatus('in-progress'); track task.id) {
+        <div class="task-card" style="background: #fff8e1; margin-bottom: 10px; padding: 10px; border-radius: 4px;">
+          <h4>{{ task.title }}</h4>
+          <p>{{ task.description }}</p>
+          <button (click)="onMoveStatus(task.id, 'todo')">⬅ Back</button>
+          <button (click)="onMoveStatus(task.id, 'done')">Complete ✔</button>
+        </div>
+      } @empty {
+        <p style="color: #888;">Nothing in progress.</p>
+      }
+    </div>
+
+    <!-- Column 3: DONE -->
+    <div class="column" style="flex: 1; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
+      <h3>Done ({{ getTasksByStatus('done').length }})</h3>
+      @for (task of getTasksByStatus('done'); track task.id) {
+        <div class="task-card" style="background: #e8f5e9; margin-bottom: 10px; padding: 10px; border-radius: 4px;">
+          <h4>{{ task.title }}</h4>
+          <p>{{ task.description }}</p>
+          <button (click)="onMoveStatus(task.id, 'in-progress')">⬅ Reopen</button>
+        </div>
+      } @empty {
+        <p style="color: #888;">No completed tasks yet.</p>
+      }
+    </div>
+
+  </div>
 </div>

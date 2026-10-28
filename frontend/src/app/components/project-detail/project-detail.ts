@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router'; 
+import { ActivatedRoute, Router } from '@angular/router'; 
 import { TaskService } from '../../services/task';
 
 @Component({
@@ -24,7 +24,8 @@ export class ProjectDetail implements OnInit {
 
   constructor(
     private route: ActivatedRoute,    // Inject the URL Scanner
-    private taskService: TaskService  // Inject the Task API Service
+    private taskService: TaskService,  // Inject the Task API Service
+    private router: Router,   
   ) {}
 
   ngOnInit() {
@@ -41,7 +42,13 @@ export class ProjectDetail implements OnInit {
       next: (data) => {
         this.tasks.set(data);
       },
-      error: (err) => console.error('Error fetching tasks:', err)
+      error: (err) => { console.error('Error fetching tasks:', err);
+      // If project does not exist or user is unauthorized:
+        if (err.status === 403 || err.status === 404) {
+          alert("Project not found or you don't have permission to access it.");
+          this.router.navigate(['/projects']); // Kick them back to safety!
+        }
+      }
     });
   }
 
@@ -67,6 +74,21 @@ export class ProjectDetail implements OnInit {
         this.loadTasks();
       },
       error: (err) => console.error('Error creating task:', err)
+    });
+  }
+
+   // --- NEW: Helper to filter tasks by status for each column ---
+  getTasksByStatus(status: string) {
+    return this.tasks().filter(task => task.status === status);
+  }
+
+  // --- NEW: Method to update task status ---
+  onMoveStatus(taskId: number, nextStatus: string) {
+    this.taskService.updateTaskStatus(taskId, nextStatus).subscribe({
+      next: () => {
+        this.loadTasks(); // Refresh the board so the card hops to its new column!
+      },
+      error: (err) => console.error('Error updating task status:', err)
     });
   }
 }
