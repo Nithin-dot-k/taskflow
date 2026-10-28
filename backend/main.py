@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from projects.router import router as projects_router
 from tasks.models import Task
 from tasks.router import router as tasks_router
+from comments.models import Comment
 
 # Tell SQLAlchemy to create all tables in our database (if they don't exist yet)
 Base.metadata.create_all(bind=engine)
