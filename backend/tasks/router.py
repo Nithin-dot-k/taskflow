@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from database import get_db
-from tasks.models import Task
+from tasks.models import Task, TaskStatus
 from tasks.schemas import TaskCreate, TaskResponse, TaskUpdateStatus
 from users.router import get_current_user
 from users.models import User
+from sqlalchemy import or_  # Needed for searching in title OR description
+
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
@@ -25,7 +27,11 @@ def create_task(task_in: TaskCreate, db: Session = Depends(get_db), current_user
     return new_task
 
 @router.get("/", response_model=list[TaskResponse])
-def list_tasks(project_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def list_tasks(project_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user),
+                status: TaskStatus | None = None,
+                search: str | None = None,
+                skip: int = Query(0, ge=0),          # ge=0 means 'greater than or equal to 0'
+                limit: int = Query(20, ge=1, le=100),):
    # 1. First, verify the project actually exists AND belongs to the user
     from projects.models import Project
     project = db.query(Project).filter(Project.id == project_id, Project.owner_id == current_user.id).first()
@@ -33,8 +39,28 @@ def list_tasks(project_id: int, db: Session = Depends(get_db), current_user: Use
     if not project:
         raise HTTPException(status_code=403, detail="Not authorized to access this project's tasks")
     
-    # 2. Now it is safe to return the tasks
-    return db.query(Task).filter(Task.project_id == project_id).all()
+    # 1. Base query: must belong to the project AND the current user
+    query = db.query(Task).filter(
+        Task.project_id == project_id
+    )
+
+    # 2. Optional Filter: by status (if provided)
+    if status:
+        query = query.filter(Task.status == status)
+
+    # 3. Optional Search: case-insensitive search in title OR description
+    if search:
+        search_pattern = f"%{search.strip()}%"
+        query = query.filter(
+            or_(
+                Task.title.ilike(search_pattern),
+                Task.description.ilike(search_pattern)
+            )
+        )
+
+    # 4. Pagination: apply offset and limit, then execute query
+    tasks = query.offset(skip).limit(limit).all()
+    return tasks
 
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_task(task_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
