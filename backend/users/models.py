@@ -18,3 +18,4 @@ class User(Base):
     projects: Mapped[List["Project"]] = relationship("Project", back_populates="owner")
 
     tasks = relationship("Task", back_populates="assignee")
+    comments = relationship("Comment", back_populates="author")

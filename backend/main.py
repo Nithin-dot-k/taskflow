@@ -8,6 +8,7 @@ from projects.router import router as projects_router
 from tasks.models import Task
 from tasks.router import router as tasks_router
 from comments.models import Comment
+from comments.router import router as comments_router
 
 # Tell SQLAlchemy to create all tables in our database (if they don't exist yet)
 Base.metadata.create_all(bind=engine)
@@ -26,6 +27,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(projects_router)
 app.include_router(tasks_router)
+app.include_router(comments_router)
 
 @app.get("/")
 def read_root():
