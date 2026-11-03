@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -11,23 +11,10 @@ export class ProjectService {
   constructor(private http: HttpClient) {}
 
   getProjects(): Observable<any> {
-    // 1. Retrieve the token we saved during login
-    const token = localStorage.getItem('token');
-
-    // 2. Create headers
-    // If there is no token, this will be empty, which is fine
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    // 3. Send headers along with the GET request
-    return this.http.get(`${this.apiUrl}/`, { headers });
+    return this.http.get(`${this.apiUrl}/`);
   }
   
   createProject(projectData: any): Observable<any> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    
-    return this.http.post(`${this.apiUrl}/`, projectData, { headers });
+    return this.http.post(`${this.apiUrl}/`, projectData);
   }
 }
