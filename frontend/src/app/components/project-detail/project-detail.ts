@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router'; 
 import { TaskService } from '../../services/task';
+import { CommentService } from '../../services/comment';
 
 @Component({
   selector: 'app-project-detail',
@@ -22,10 +23,15 @@ export class ProjectDetail implements OnInit {
   newTaskTitle = '';
   newTaskDescription = '';
 
+  selectedTask = signal<any | null>(null);
+  comments = signal<any[]>([]);
+  newCommentText = '';
+
   constructor(
     private route: ActivatedRoute,    // Inject the URL Scanner
     private taskService: TaskService,  // Inject the Task API Service
     private router: Router,   
+    private commentService: CommentService
   ) {}
 
   ngOnInit() {
@@ -83,12 +89,54 @@ export class ProjectDetail implements OnInit {
   }
 
   // --- NEW: Method to update task status ---
-  onMoveStatus(taskId: number, nextStatus: string) {
+  onMoveStatus(taskId: number, nextStatus: string, event?: Event) {
+
+    if (event) {
+      event.stopPropagation();
+    }
+
     this.taskService.updateTaskStatus(taskId, nextStatus).subscribe({
       next: () => {
         this.loadTasks(); // Refresh the board so the card hops to its new column!
+        if (this.selectedTask() && this.selectedTask().id === taskId) {
+          this.selectedTask.update(t => ({ ...t, status: nextStatus }));
+        }
       },
       error: (err) => console.error('Error updating task status:', err)
+    });
+  }
+
+  selectTask(task: any) {
+    this.selectedTask.set(task);
+    this.loadComments(task.id);
+  }
+
+  closeTaskDetail() {
+    this.selectedTask.set(null);
+    this.comments.set([]);
+    this.newCommentText = '';
+  }
+
+  loadComments(taskId: number) {
+    this.commentService.getComments(taskId).subscribe({
+      next: (data) => {
+        this.comments.set(data);
+      },
+      error: (err) => console.error('Error fetching comments:', err)
+    });
+  }
+
+  onAddComment() {
+    if (!this.newCommentText.trim() || !this.selectedTask()) {
+      return;
+    }
+
+    this.commentService.addComment(this.selectedTask().id, this.newCommentText.trim()).subscribe({
+      next: () => {
+        this.newCommentText = '';
+        this.loadComments(this.selectedTask().id); // Reload comments to show the new one!
+      },
+      error: (err) => console.error('Error posting comment:', err)
     });
   }
 }
