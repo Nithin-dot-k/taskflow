@@ -11,8 +11,15 @@ export class TaskService {
   constructor(private http: HttpClient) {}
 
   // Fetch tasks belonging to a specific project
-  getTasks(projectId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/?project_id=${projectId}`);
+  getTasks(projectId: number, search?: string): Observable<any> {
+     let url = `${this.apiUrl}/?project_id=${projectId}`;
+
+    // If the user typed a search term, append &search=... to the URL
+    if (search && search.trim()) {
+      url += `&search=${encodeURIComponent(search.trim())}`;
+    }
+
+    return this.http.get(url);
   }
 
   // Create a new task attached to a project

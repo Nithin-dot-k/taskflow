@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router'; 
@@ -22,10 +22,14 @@ export class ProjectDetail implements OnInit {
   // Form input variables for creating a new task
   newTaskTitle = '';
   newTaskDescription = '';
-
+  searchTerm = '';
   selectedTask = signal<any | null>(null);
   comments = signal<any[]>([]);
   newCommentText = '';
+
+  todoTasks = computed(() => this.tasks().filter(t => t.status === 'todo'));
+  inProgressTasks = computed(() => this.tasks().filter(t => t.status === 'in-progress'));
+  doneTasks = computed(() => this.tasks().filter(t => t.status === 'done'));
 
   constructor(
     private route: ActivatedRoute,    // Inject the URL Scanner
@@ -43,8 +47,13 @@ export class ProjectDetail implements OnInit {
     this.loadTasks();
   }
 
+  onSearch() {
+    this.loadTasks(); // Re-runs loadTasks with the current searchTerm!
+  }
+
+
   loadTasks() {
-    this.taskService.getTasks(this.projectId).subscribe({
+    this.taskService.getTasks(this.projectId, this.searchTerm).subscribe({
       next: (data) => {
         this.tasks.set(data);
       },
@@ -83,10 +92,6 @@ export class ProjectDetail implements OnInit {
     });
   }
 
-   // --- NEW: Helper to filter tasks by status for each column ---
-  getTasksByStatus(status: string) {
-    return this.tasks().filter(task => task.status === status);
-  }
 
   // --- NEW: Method to update task status ---
   onMoveStatus(taskId: number, nextStatus: string, event?: Event) {

@@ -1,6 +1,21 @@
 <div class="project-detail-container">
   <h2>Project Tasks (ID: {{ projectId }})</h2>
 
+  <!-- Search & Filter Bar -->
+  <div class="search-bar" style="margin-bottom: 20px;">
+    <input 
+      [(ngModel)]="searchTerm" 
+      (input)="onSearch()" 
+      placeholder="🔍 Search tasks by title or description..." 
+      style="width: 100%; max-width: 400px; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px;"
+    />
+    @if (searchTerm) {
+      <button (click)="searchTerm = ''; onSearch()" style="margin-left: 8px; padding: 10px; cursor: pointer;">
+        Clear ✕
+      </button>
+    }
+  </div>
+
   <!-- 1. Add Task Form -->
   <div class="add-task-form">
     <h3>Add New Task</h3>
@@ -16,8 +31,8 @@
 
     <!-- Column 1: TO DO -->
     <div class="column" style="flex: 1; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
-      <h3>To Do ({{ getTasksByStatus('todo').length }})</h3>
-      @for (task of getTasksByStatus('todo'); track task.id) {
+      <h3>To Do ({{ todoTasks().length }})</h3>
+      @for (task of todoTasks(); track task.id) {
         <div class="task-card" (click)="selectTask(task)" style="background: #f9f9f9; margin-bottom: 10px; padding: 10px; border-radius: 4px; cursor: pointer; border: 1px solid #ddd;">
           <h4>{{ task.title }}</h4>
           <p>{{ task.description }}</p>
@@ -30,8 +45,8 @@
 
     <!-- Column 2: IN PROGRESS -->
     <div class="column" style="flex: 1; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
-      <h3>In Progress ({{ getTasksByStatus('in-progress').length }})</h3>
-      @for (task of getTasksByStatus('in-progress'); track task.id) {
+      <h3>In Progress ({{ inProgressTasks().length }})</h3>
+      @for (task of inProgressTasks(); track task.id) {
         <div class="task-card" (click)="selectTask(task)" style="background: #fff8e1; margin-bottom: 10px; padding: 10px; border-radius: 4px; cursor: pointer; border: 1px solid #e0c870;">
           <h4>{{ task.title }}</h4>
           <p>{{ task.description }}</p>
@@ -45,8 +60,8 @@
 
     <!-- Column 3: DONE -->
     <div class="column" style="flex: 1; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
-      <h3>Done ({{ getTasksByStatus('done').length }})</h3>
-      @for (task of getTasksByStatus('done'); track task.id) {
+      <h3>Done ({{ doneTasks().length }})</h3>
+      @for (task of doneTasks(); track task.id) {
         <div class="task-card" (click)="selectTask(task)" style="background: #e8f5e9; margin-bottom: 10px; padding: 10px; border-radius: 4px; cursor: pointer; border: 1px solid #a5d6a7;">
           <h4>{{ task.title }}</h4>
           <p>{{ task.description }}</p>
