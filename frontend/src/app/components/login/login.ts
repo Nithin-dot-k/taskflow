@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -13,7 +14,7 @@ export class Login {
   email = '';
   password = '';
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   onLogin() {
     // 1. Call the service
@@ -22,6 +23,7 @@ export class Login {
         // 2. Save the token in the browser's persistent storage
         localStorage.setItem('token', response.access_token);
         alert('Login successful!');
+        this.router.navigate(['/projects']);
       },
       error: (err) => alert('Login failed. Check your credentials.'),
     });

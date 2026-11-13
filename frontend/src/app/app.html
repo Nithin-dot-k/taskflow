@@ -1,1 +1,27 @@
-<router-outlet></router-outlet>
+<header style="background: #1e293b; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white;">
+  <!-- Logo / Brand Title -->
+  <div style="font-size: 20px; font-weight: bold;">
+    <a routerLink="/projects" style="color: #38bdf8; text-decoration: none;">⚡ TaskFlow</a>
+  </div>
+
+  <!-- Navigation Links -->
+  <nav style="display: flex; gap: 15px; align-items: center;">
+    @if (isLoggedIn()) {
+      <a routerLink="/projects" style="color: white; text-decoration: none;">My Projects</a>
+      <a routerLink="/create-project" style="color: white; text-decoration: none;">+ New Project</a>
+      <button (click)="logout()" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+        Logout
+      </button>
+    } @else {
+      <a routerLink="/login" style="color: white; text-decoration: none;">Login</a>
+      <a routerLink="/signup" style="background: #38bdf8; color: #0f172a; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: bold;">
+        Sign Up
+      </a>
+    }
+  </nav>
+</header>
+
+<!-- The pages swap in and out here below the navbar! -->
+<main style="padding: 20px; max-width: 1200px; margin: 0 auto;">
+  <router-outlet></router-outlet>
+</main>
